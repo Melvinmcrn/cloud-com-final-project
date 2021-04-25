@@ -27,7 +27,11 @@ const App = () => {
         }
         shouldFetch = false;
         const responseDatas = await getPrintQueue();
-        if (responseDatas?.messages[0]) {
+        if (
+          responseDatas?.messages &&
+          responseDatas?.messages?.length > 0 &&
+          responseDatas?.messages[0]
+        ) {
           setCurrentPrintData(responseDatas.messages[0]);
           printing(responseDatas.messages[0]);
         } else {
