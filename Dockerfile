@@ -9,6 +9,8 @@ COPY yarn.lock .
 
 RUN yarn install --ignore-platform
 
+ENV REACT_APP_API_URL=http://35.240.186.183:5000
+
 COPY . .
 
 RUN yarn build
