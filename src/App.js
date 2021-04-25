@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Navbar, Card, Badge } from "react-bootstrap";
-import { getPrintQueue } from "./api/print";
+import { getPrintQueue, postPrint } from "./api/print";
 
 import printImage from "./image/printer.png";
 
@@ -11,12 +11,12 @@ const App = () => {
   useEffect(() => {
     let shouldFetch = true;
 
-    const printing = async () => {
+    const printing = async (printData) => {
       setIsAvailable(false);
       setTimeout(() => {
         setIsAvailable(true);
         shouldFetch = true;
-        // send back that it is printed
+        postPrint(printData.print_id);
       }, 10000);
     };
 
@@ -29,7 +29,7 @@ const App = () => {
         const responseDatas = await getPrintQueue();
         if (responseDatas?.messages[0]) {
           setCurrentPrintData(responseDatas.messages[0]);
-          printing();
+          printing(responseDatas.messages[0]);
         } else {
           shouldFetch = true;
         }
