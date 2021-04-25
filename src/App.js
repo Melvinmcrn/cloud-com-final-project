@@ -1,10 +1,52 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Container, Row, Col, Navbar, Card, Badge } from "react-bootstrap";
+import { getPrintQueue } from "./api/print";
 
 import printImage from "./image/printer.png";
 
 const App = () => {
   const [isAvailable, setIsAvailable] = useState(true);
+  const [currentPrintData, setCurrentPrintData] = useState();
+
+  useEffect(() => {
+    let shouldFetch = true;
+
+    const printing = async () => {
+      setIsAvailable(false);
+      setTimeout(() => {
+        setIsAvailable(true);
+        shouldFetch = true;
+        // send back that it is printed
+      }, 10000);
+    };
+
+    const fetchPrintQueue = async () => {
+      try {
+        if (!shouldFetch) {
+          return;
+        }
+        shouldFetch = false;
+        const responseDatas = await getPrintQueue();
+        if (responseDatas?.messages[0]) {
+          setCurrentPrintData(responseDatas.messages[0]);
+          printing();
+        } else {
+          shouldFetch = true;
+        }
+      } catch (error) {
+        console.error(error);
+        shouldFetch = true;
+      }
+    };
+
+    const interval = setInterval(() => {
+      fetchPrintQueue();
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <>
@@ -27,12 +69,13 @@ const App = () => {
                     {isAvailable ? "Available" : "Printing"}
                   </Badge>
                   {isAvailable ? null : (
-                    <Card.Text>Currently printing: {"Melvin"}</Card.Text>
+                    <Card.Text>
+                      Currently printing: {currentPrintData?.user_name}
+                    </Card.Text>
                   )}
                 </Card.Body>
               </Card>
             </Col>
-            <Col>Print log here</Col>
           </Row>
         </Container>
       </div>
