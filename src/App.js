@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Navbar, Card, Badge } from "react-bootstrap";
 import { getPrintQueue } from "./api/print";
 
